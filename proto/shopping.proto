@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package shopping;
+
+option go_package = "kakao-shopping/proto/shopping";
+
+service ProductService {
+    rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+
+    rpc GetProduct(GetProductRequest) returns (Product);
+
+    rpc SearchProducts(SearchProductsRequest) returns (ListProductsResponse);
+}
+
+service CartService {
+    rpc AddToCart(AddToCartRequest) returns (CartResponse);
+
+    rpc GetCart(GetCartRequest) returns (CartResponse);
+
+    rpc RemoveFromCart(RemoveFromCartRequest) returns (CartResponse);
+
+    rpc ClearCart(ClearCartRequest) returns (CartResponse);
+}
+
+service OrderService {
+    rpc CreateOrder(CreateOrderRequest) returns (Order);
+
+    rpc GetOrder(GetOrderRequest) returns (Order);
+
+    rpc ListUserOrders(ListUserOrdersRequest) returns (ListOrdersResponse);
+}
+
+// 상품 정보
+message Product {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    int32 price = 4;
+    string category = 5;
+    int32 stock = 6;
+    string image_url = 7;
+}
+
+// 장바구니 아이템
+message CartItem {
+    Product product = 1;
+    int32 quantity = 2;
+}
+
+// 장바구니
+message Cart {
+    string user_id = 1;
+    repeated CartItem items = 2;
+    int32 total_price = 3;
+}
+
+// 주문 정보
+message Order {
+    string order_id = 1;
+    string user_id = 2;
+    repeated CartItem items = 3;
+    int32 total_price = 4;
+    string status = 5; // "pending", "confirmed", "shipped", "delivered"
+    string created_at = 6;
+}
+
+// 요청 메시지들
+message ListProductsRequest {
+    string category = 1; // 선택적 카테고리 필터
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ListProductsResponse {
+    repeated Product products = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message GetProductRequest {
+    int32 product_id = 1;
+}
+
+message SearchProductsRequest {
+    string query = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message AddToCartRequest {
+    string user_id = 1;
+    int32 product_id = 2;
+    int32 quantity = 3;
+}
+
+message GetCartRequest {
+    string user_id = 1;
+}
+
+message RemoveFromCartRequest {
+    string user_id = 1;
+    int32 product_id = 2;
+}
+
+message ClearCartRequest {
+    string user_id = 1;
+}
+
+message CartResponse {
+    Cart cart = 1;
+    string message = 2;
+}
+
+message CreateOrderRequest {
+    string user_id = 1;
+}
+
+message GetOrderRequest {
+    string order_id = 1;
+}
+
+message ListUserOrdersRequest {
+    string user_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ListOrdersResponse {
+    repeated Order orders = 1;
+    int32 total_count = 2;
+}

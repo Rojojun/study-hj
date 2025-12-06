@@ -1,0 +1,237 @@
+syntax = "proto3"; // 문법에 대한 버전 (필수)
+
+pacakage tutorial; // 패키지 선언 (선택사항)
+
+message Person {   // 메시지를 정의 (필요에 따라서)
+    // 필드 정의
+}
+
+syntax = "proto3";
+
+message User {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+message Numbers {
+    int32 age = 1;
+    int64 po = 2;
+    uint32 count = 3 ;
+    uint64 c = 4;
+}
+
+message BasicTypes {
+    float tem = 1; // 32bit
+    double t = 2; // 64bit
+    bool is_actvie = 3; // T, F
+}
+
+message TextData {
+    string name = 1; // UTF-8
+     bytes data = 2; // binary
+}
+
+message UserProfile {
+    string name = 1;
+    repeated string hobbies = 2;
+}
+// result
+name: "김개발"
+hobbies: ["독서", "영화감상", "코딩"]
+
+enum Status {
+    UNKNOWN = 0;
+    ACTIVE = 1;
+}
+
+message Account {
+    string name = 1;
+    Status status = 2;
+}
+
+message Address {
+    string street = 1;
+    string city = 2;
+}
+
+message Person {
+    string name = 1;
+    int32 age = 2;
+    Address home_address = 3;
+    Address work_address = 4;
+}
+
+message Company {
+    string name = 1;
+
+    message Employ {
+        string name = 1;
+    }
+
+    repeated Employ employees = 2;
+}
+
+// proto3의 모든 필드는 Optional이다.
+
+message UserSettings {
+    string theme = 1; // 빈문자열
+    bool noti = 2;
+    int32 = tiem = 3;
+    repeated string lan = 4;
+}
+
+enum Status2 {
+    UNKNOWN = 0;
+    STARTED = 1001;
+    FINISHED = 1002;
+}
+
+message ABC {
+    Status2 test = 1 // default = UNKNOWN
+}
+
+// 초 간단 블로그 시스템
+
+message User {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    bool is_deleted = 4;
+}
+
+enum PostStatus {
+    YET = 0;
+    RELEASED = 1;
+}
+
+message Post {
+    int32 id = 1;
+    int32 user_id = 6;
+    string title. = 2;
+    string content = 3;
+    repeated string tags = 4;
+    PostStatus status = 5;
+}
+
+message Comment {
+    int32 id = 1;
+    int32 post_id = 2;
+    int32 user_id = 3;
+    string content = 4;
+}
+
+
+// 실무에서 복잡한 패턴 알아보기
+message SearchRequest {
+    string query = 1;
+    string keyword = 2;
+    int32 user_id = 3;
+    DataRange data_range = 4;
+}
+
+message SearchRequestOneOf {
+    string query = 1; // 검색하고자 하는 문구
+
+    oneof search_type {
+        string keyword = 2;
+        int32 user_id = 3;
+        DataRange data_range = 4;
+    }
+}
+
+message APIResponse {
+    string request_id = 1;
+
+    oneof Result {
+        SuccessData success = 2;
+        ErrorInfo error = 3;
+    }
+}
+
+message SuccessData {
+    string message = 1;
+    repeated string data = 2;
+}
+
+message ErrorInfo {
+    int32 error_code = 1;
+    string error_message = 2;
+}
+
+message UserLoginEvent {
+    string user_id = 1;
+    string ip_address = 2;
+}
+
+message OrderCreatedEvent {
+    string order_id = 1;
+    string customer_id = 2;
+}
+
+message Event {
+    string event_id = 1;
+    string tiem = 2;
+
+    oneof event_data {
+        UserLoginEvent user_login = 10;
+        OrderCreatedEvent order_createed = 11;
+    }
+}
+
+
+
+
+
+
+
+// MAP
+
+message UserSettings {
+    string id = 1;
+    repeated KeyValuePair settings = 2;
+}
+
+message KeyValuePair {
+    string key = 1;
+    string value = 2;
+}
+
+
+message UserProfile {
+    string id = 1;
+
+    map <string, string> set = 3;
+}
+
+
+{
+    "id": "user1234",
+    "set" : {
+        "theme" : "dark",
+        "language" : "ko",
+        "tiemzone" : "Asia/Seoul"
+    }
+}
+
+message Product {
+    string product_id = 1;
+    string name = 2;
+    double price = 3;
+
+    map<string, string> attributes = 4;
+}
+
+
+
+
+
+
+
+// 동적 메시지 처리
+
+import "google/protobuf/any.proto";
+
+message GenericMessage {
+    google.protobuf.Any payload = 1;
+}

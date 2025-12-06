@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "realtime-chat/proto/chat";
+
+import "google/protobuf/timestamp.proto";
+
+service ChatService {
+    // Bidrectional Streaming
+    rpc StreamChat(stream ChatMessage) returns (stream ChatMessage);
+
+    rpc GetMessageHistory(MessageHistoryRequest) returns (stream ChatMessage);
+
+    rpc SendBulkMessages(stream ChatMessage) returns (BulkMessageResponse);
+}
+
+enum MessageType {
+    TEXT = 0;
+    SYSTEM = 1;
+}
+
+message ChatMessage {
+    string message_id = 1;
+    string user_id = 2;
+    string username = 3;
+    string content = 4;
+    MessageType type = 5;
+    google.protobuf.Timestamp timestamp = 6;
+}
+
+message MessageHistoryRequest {
+    int32 limit = 1;
+    google.protobuf.Timestamp before = 2;
+}
+
+message BulkMessageResponse {
+    int32 total_sent = 1;
+    int32 successful = 2;
+    int32 failed = 3;
+    string message = 4;
+}
