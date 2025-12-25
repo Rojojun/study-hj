@@ -1,6 +1,7 @@
 package store
 
 import (
+	"strings"
 	"sync"
 
 	pb "kakao-shopping/proto"
@@ -71,6 +72,43 @@ func (s *ProductStore) ListProducts(category string, page, pageSize int32) ([]*p
 	}
 
 	return filteredProducts[start:end], totalCount
+}
+
+func (s *ProductStore) SearchProducts(query string, page, pageSize int32) ([]*pb.Product, int32) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var searchResults []*pb.Product
+	query = strings.ToLower(query)
+
+	for _, product := range s.products {
+		if strings.Contains(strings.ToLower(product.Name), query) ||
+			strings.Contains(strings.ToLower(product.Description), query) {
+			searchResults = append(searchResults, product)
+		}
+	}
+
+	totalCount := int32(len(searchResults))
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	start := (page - 1) * pageSize
+	end := start + pageSize
+
+	if end >= totalCount {
+		return []*pb.Product{}, totalCount
+	}
+
+	if end > totalCount {
+		end = totalCount
+	}
+
+	return searchResults[start:end], totalCount
 }
 
 func (s *ProductStore) UpdateStock(productID int32, quantity int32) bool {
